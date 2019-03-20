@@ -1,6 +1,6 @@
 library(tidyverse)
 
-# Compress a range of years into a single observation period
+# Compress a range of annual data into a single summary observation
 compress = function(
   years,
   start,
@@ -24,7 +24,7 @@ compress = function(
     )
 }
 
-# Transform the .met data into summarised data over multiple years
+# Transform .met file from daily data to annual data
 transform_met = function(
   id,
   folder
@@ -48,11 +48,16 @@ transform_met = function(
               sum_80_thi_days = sum(thi > 80),
               sum_85_thi_days = sum(thi > 85)
             )
+}
 
-  # Split data into periods
+# Join a set of year-range summaries into a single tibble
+get_periods = function(
+  years
+)
+{
   periods <- compress(years, 1961, 1990) %>%
-          full_join(compress(years, 1991, 2000)) %>%
-          full_join(compress(years, 2001, 2010)) %>%
-          full_join(compress(years, 2011, 2018)) %>%
-          full_join(compress(years, 1991, 2018))
+    full_join(compress(years, 1991, 2000)) %>%
+    full_join(compress(years, 2001, 2010)) %>%
+    full_join(compress(years, 2011, 2018)) %>%
+    full_join(compress(years, 1991, 2018))
 }
