@@ -16,11 +16,11 @@ compress = function(
       avg_pan = mean(mean_pan),
       tot_rain = sum(sum_rain),
       var_rain = sd(sum_rain, na.rm = TRUE),
-      num_00_mm_days = sum(sum_00_mm_days),
-      num_25_mm_days = sum(sum_25_mm_days),
-      num_50_mm_days = sum(sum_50_mm_days),
-      num_80_thi_days = sum(sum_80_thi_days),
-      num_85_thi_days = sum(sum_85_thi_days)
+      num_00_mm_days = sum(sum_00_mm_days) / (finish - start),
+      num_25_mm_days = sum(sum_25_mm_days) / (finish - start),
+      num_50_mm_days = sum(sum_50_mm_days) / (finish - start),
+      num_80_thi_days = sum(sum_80_thi_days) / (finish - start),
+      num_85_thi_days = sum(sum_85_thi_days) / (finish - start)
     )
 }
 
@@ -38,7 +38,9 @@ transform_met = function(
           group_by(year) %>%
           summarise(
               mean_maxt = mean(maxt),
+              abs_maxt = max(maxt),
               mean_mint = mean(mint),
+              abs_mint = min(mint),
               mean_temp = mean((mint + maxt) / 2),
               mean_pan = mean(pan),
               sum_rain = sum(rain),
@@ -50,14 +52,37 @@ transform_met = function(
             )
 }
 
-# Join a set of year-range summaries into a single tibble
+# Join a set of year-range summaries into a single tibble based on year ranges (e.g. 1961 to 1990)
 get_periods = function(
-  years
+  years,
+  ranges = matrix(c(1961, 1991, 2001, 2011, 1991, 1990, 2000, 2010, 2018, 2018), nrow = 5, ncol = 2)
 )
 {
-  periods <- compress(years, 1961, 1990) %>%
-    full_join(compress(years, 1991, 2000)) %>%
-    full_join(compress(years, 2001, 2010)) %>%
-    full_join(compress(years, 2011, 2018)) %>%
-    full_join(compress(years, 1991, 2018))
+  periods <- compress(years, ranges[1,1], ranges[1,2])
+  vars <- c(
+    "period",
+    "avg_maxt",
+    "avg_mint",
+    "avg_temp",
+    "avg_pan",
+    "tot_rain",
+    "var_rain",
+    "num_00_mm_days",
+    "num_25_mm_days",
+    "num_50_mm_days",
+    "num_80_thi_days",
+    "num_85_thi_days"
+  )
+
+  # Select the time periods based on the given ranges
+  for (r in 2:nrow(ranges))
+  {
+    periods <- full_join(periods, compress(years, ranges[r, 1], ranges[r, 2]), vars)
+  }
+
+  # Enforce ordering based on order added
+  periods$period <- factor(periods$period, levels = periods$period)
+
+  # Return the periods
+  periods
 }
