@@ -1,0 +1,1 @@
+wget -O "SILO_Met\1001.met" "http://apsrunet.apsim.info/cgi-bin/getData.met?format=apsim&station=1001&ddStart=1&mmStart=1&yyyyStart=1981&ddFinish=31&mmFinish=8&yyyyFinish=2017"

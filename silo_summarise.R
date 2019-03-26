@@ -1,6 +1,6 @@
-library(tidyverse)
+# Summarises transformed SILO data (by range of years)
 
-# Compress a range of annual data into a single summary observation
+# Compresses
 compress = function(
   years,
   start,
@@ -24,39 +24,12 @@ compress = function(
     )
 }
 
-# Transform .met file from daily data to annual data
-transform_met = function(
-  id,
-  folder
-)
-{
-  source('get_met.r')
-
-  # Summarise the met data by year
-  years <- get_met(id, folder) %>%
-          mutate(thi = 0.8 * maxt + ((maxt / 100) * (maxt - 14.4)) + 46.4) %>%
-          group_by(year) %>%
-          summarise(
-              mean_maxt = mean(maxt),
-              abs_maxt = max(maxt),
-              mean_mint = mean(mint),
-              abs_mint = min(mint),
-              mean_temp = mean((mint + maxt) / 2),
-              mean_pan = mean(pan),
-              sum_rain = sum(rain),
-              sum_00_mm_days = sum(rain == 0),
-              sum_25_mm_days = sum(rain > 25),
-              sum_50_mm_days = sum(rain > 50),
-              sum_80_thi_days = sum(thi > 80),
-              sum_85_thi_days = sum(thi > 85)
-            )
-}
-
-# Join a set of year-range summaries into a single tibble based on year ranges (e.g. 1961 to 1990)
+# Join a set of year-range summaries into a single tibble based on year ranges (e.g. 1961 to 1990) that can be plotted
 get_periods = function(
   years,
-  ranges = matrix(c(1961, 1991, 2001, 2011, 1991, 1990, 2000, 2010, 2018, 2018), nrow = 5, ncol = 2)
+  ranges = matrix(c(1958, 1988, 1998, 2008, 1988, 1987, 1997, 2007, 2018, 2018), nrow = 5, ncol = 2)
 )
+
 {
   periods <- compress(years, ranges[1,1], ranges[1,2])
   vars <- c(
