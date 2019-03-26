@@ -12,7 +12,7 @@ get_met = function(
   name = "",
   start_day = 1,
   start_month = 1,
-  start_year = 1961,
+  start_year = 1958,
   end_day = 31,
   end_month = 12,
   end_year = 2018
@@ -91,23 +91,40 @@ get_met = function(
 get_ppd = function(
   ID,
   destination,
+  username,
+  password,
   name = "",
-  start_day = 1,
-  start_month = 1,
-  start_year = 1961,
-  end_day = 31,
-  end_month = 12,
-  end_year = 2018
+  start_day = "01",
+  start_month = "01",
+  start_year = "1958",
+  end_day = "31",
+  end_month = "12",
+  end_year = "2018"
 )
 {
   # Website (defaulting to apsim format)
-  site <- "https://legacy.longpaddock.qld.gov.au/cgi-bin/silo/PatchedPointDataset.php?format=alldata"
+  site <- "https://legacy.longpaddock.qld.gov.au/cgi-bin/silo/PatchedPointDataset.php?"
 
-  # Combine the search arguments
-  args <- str_interp("&station=${ID}&ddStart=${start_day}&mmStart=${start_month}&yyyyStart=${start_year}&ddFinish=${end_day}&mmFinish=${end_month}&yyyyFinish=${end_year}")
+  # The file format
+  form <- "format=Standard"
 
-  # Attach search arguments to site
-  URL <- str_c(site, args)
+  # The station ID
+  station <- str_interp("&station=${ID}")
+
+  # The start date
+  start <- str_interp("&start=${start_year}${start_month}${start_day}")
+
+  # The finish date
+  finish <- str_interp("&finish=${end_year}${end_month}${end_day}")
+
+  # The user credentials
+  creds <- str_interp("&username=${username}&password=${password}")
+
+  # Combine the parameters into a valid request URL
+  URL <- str_c(site, form, station, start, finish, creds)
+
+  # wget options
+  options <- "--ca-certificate=cacert.pem -O"
 
   # Download the file if it doesn't exist already
   path <- str_interp("${destination}/${ID}${name}.txt")
@@ -116,7 +133,7 @@ get_ppd = function(
       URL,
       destfile = path,
       method = "wget",
-      extra = "-O -q",
+      extra = options,
       cacheOK = FALSE,
       quiet = TRUE
     )

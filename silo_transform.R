@@ -32,12 +32,11 @@ transform_met = function(
 
 # Transform ppd (.txt) file from daily data to annual data
 transform_ppd = function(
-  id,
-  path
+  ppd
 )
 {
   # Summarise the met data by year
-  years <- get_ppd(id, path) %>%
+  years <- ppd %>%
     mutate(THI = 0.8 * T.Max + ((RHmaxT / 100) * (T.Max - 14.4)) + 46.4) %>%
     mutate(year = as.double(format(Date2, "%Y"))) %>%
     group_by(year) %>%
