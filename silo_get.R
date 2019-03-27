@@ -12,7 +12,7 @@ get_met = function(
   name = "",
   start_day = 1,
   start_month = 1,
-  start_year = 1958,
+  start_year = 1959,
   end_day = 31,
   end_month = 12,
   end_year = 2018
@@ -20,7 +20,6 @@ get_met = function(
 {
   # Website (defaulting to apsim format)
   site <- "http://apsrunet.apsim.info/cgi-bin/getData.met?format=apsim"
-  #site <- "https://legacy.longpaddock.qld.gov.au/cgi-bin/silo/PatchedPointDataset.php?format=alldata"
 
   # Combine the search arguments
   args <- str_interp("&station=${ID}&ddStart=${start_day}&mmStart=${start_month}&yyyyStart=${start_year}&ddFinish=${end_day}&mmFinish=${end_month}&yyyyFinish=${end_year}")
@@ -96,7 +95,7 @@ get_ppd = function(
   name = "",
   start_day = "01",
   start_month = "01",
-  start_year = "1958",
+  start_year = "1959",
   end_day = "31",
   end_month = "12",
   end_year = "2018"
@@ -176,7 +175,8 @@ get_ppd = function(
       skip_empty_rows = TRUE,
       col_types = types,
       col_names = names
-    )
+    ) %>%
+      mutate(THI = 0.8 * T.Max + ((RHmaxT / 100) * (T.Max - 14.4)) + 46.4)
   }
 }
 
