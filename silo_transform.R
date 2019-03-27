@@ -37,7 +37,6 @@ transform_ppd = function(
 {
   # Summarise the met data by year
   years <- ppd %>%
-    mutate(THI = 0.8 * T.Max + ((RHmaxT / 100) * (T.Max - 14.4)) + 46.4) %>%
     mutate(year = as.double(format(Date2, "%Y"))) %>%
     group_by(year) %>%
     summarise(
@@ -50,6 +49,8 @@ transform_ppd = function(
       sum_25_mm_days = sum(Rain > 25),
       sum_50_mm_days = sum(Rain > 50),
       sum_80_thi_days = sum(THI > 80),
-      sum_85_thi_days = sum(THI > 85)
+      sum_85_thi_days = sum(THI > 85),
+      sum_35_tmax_days = sum(T.Max > 35),
+      sum_40_tmax_days = sum(T.Max > 40)
     )
 }
