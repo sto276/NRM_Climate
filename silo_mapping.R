@@ -35,45 +35,6 @@ for(name in nrm$NRM_REGION){
   write_csv(geo, "Maps/Tableau/Station.csv")
 }
 
-# {
-# regions <- c("Burnett Mary",
-#              "Cape York",
-#              "Condamine",
-#              "Co-operative Management Area",
-#              "Desert Channels",
-#              "Fitzroy",
-#              "Burdekin",
-#              "Northern Gulf",
-#              "Maranoa Balonne and Border Rivers",
-#              "Mackay Whitsunday",
-#              "South East Queensland",
-#              "South West Queensland",
-#              "Southern Gulf",
-#              "Wet Tropics",
-#              "Northern Territory",
-#              "Rangelands Region"
-#              )
-#
-# maps <- subset(nrm, NRM_REGION %in% regions)
-# points <- data.frame(subset(stations, region %in% regions))
-#
-# map <- ggplot() +
-#   geom_polygon(data = maps,
-#                aes(x = long,
-#                    y = lat,
-#                    group = group),
-#                colour = "black",
-#                fill = "grey") +
-#   geom_point(data = points,
-#              aes(x = Lon,
-#                  y = Lat,
-#                  colour = region),
-#              size = 0.02)
-#   #coord_cartesian(xlim = c(114, 152),
-#   #                ylim =c(-43, -12))
-#   #labs(title = "Australia by weather station location")
-# }
-
 get_records = function(
   path = "StationRecords.csv"
 )
@@ -98,8 +59,46 @@ get_records = function(
   records <- read_csv(path, col_types = types) %>%
     select(-one_of("X1")) %>%
     unique() %>%
-    filter(Lat >= -20) %>%
-    filter((FirstMaxT < 1958) | (LastMaxT > 2018)) %>%
+    filter(Lat >= -22) %>%
+    filter((FirstMaxT <= 1988) & (LastMaxT > 2018)) %>%
     arrange(Station)
 }
+
+regions <- c("Burnett Mary",
+             "Cape York",
+             "Condamine",
+             "Co-operative Management Area",
+             "Desert Channels",
+             "Fitzroy",
+             "Burdekin",
+             "Northern Gulf",
+             "Maranoa Balonne and Border Rivers",
+             "Mackay Whitsunday",
+             "South East Queensland",
+             "South West Queensland",
+             "Southern Gulf",
+             "Wet Tropics",
+             "Northern Territory",
+             "Rangelands Region"
+             )
+
+maps <- subset(nrm, NRM_REGION %in% regions)
+points <- data.frame(subset(stations, region %in% regions))
+
+map <- ggplot() +
+  geom_polygon(data = maps,
+               aes(x = long,
+                   y = lat,
+                   group = group),
+               colour = "black",
+               fill = "grey") +
+  geom_point(data = records,
+             aes(x = Lon,
+                 y = Lat),
+             colour = "red",
+             size = 1)
+  #coord_cartesian(xlim = c(114, 152),
+  #                ylim =c(-43, -12))
+  #labs(title = "Australia by weather station location")
+
 

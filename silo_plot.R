@@ -75,6 +75,7 @@ plot_year_thi_days = function(
 # Plot the average yearly THI days in each period
 plot_period_thi_days = function(
   periods,
+  id,
   slice = c(1:4)
 )
 {
